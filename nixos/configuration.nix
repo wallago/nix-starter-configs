@@ -1,21 +1,29 @@
-{ inputs, lib, config, ... }: {
+{ outputs, inputs, lib, config, ... }:
+let flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
+in {
   imports = [
     ./hardware-configuration.nix
     # Includes the Home Manager module from the home-manager input in NixOS configuration
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    overlays = builtins.attrValues outputs.overlays;
+    config.allowUnfree = true;
+  };
 
-  nix = let flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-  in {
+  nix = {
     settings = {
-      experimental-features = "nix-command flakes";
-      flake-registry = "";
-      nix-path = config.nix.nixPath;
+      experimental-features = [
+        "nix-command"
+        "flakes"
+        "ca-derivations" # -> The hash is based on the output rather than the inputs.
+      ];
+      warn-dirty = false;
+      flake-registry = ""; # Disable global flake registry
     };
-    channel.enable = false;
 
+    # Add each flake input as a registry and nix_path
     registry = lib.mapAttrs (_: flake: { inherit flake; }) flakeInputs;
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
   };
@@ -29,7 +37,6 @@
       openssh.authorizedKeys.keys =
         [ (builtins.readFile ./ssh_host_ed25519_key.pub) ];
       extraGroups = [ "wheel" ];
-
     };
   };
 
@@ -42,5 +49,5 @@
       PasswordAuthentication = false;
     };
   };
-  system.stateVersion = "25.11";
+  system.stateVersion = "${config.system.nixos.release}";
 }

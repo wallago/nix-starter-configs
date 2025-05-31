@@ -2,7 +2,7 @@
   home = {
     username = "minimal";
     homeDirectory = "/home/minimal";
-    stateVersion = "25.11";
+    stateVersion = "24.05";
   };
 
   programs = {
@@ -13,4 +13,5 @@
   nixpkgs.config.allowUnfree = true;
 
   systemd.user.startServices = "sd-switch";
+
 }
