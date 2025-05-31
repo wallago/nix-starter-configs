@@ -16,7 +16,7 @@
       nixosConfigurations = {
         minimal = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
-          modules = [ ./nixos.nix ];
+          modules = [ ./nixos/configuration.nix ];
         };
       };
     };

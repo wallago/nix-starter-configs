@@ -1,5 +1,9 @@
 { inputs, lib, config, ... }: {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    # Includes the Home Manager module from the home-manager input in NixOS configuration
+    inputs.home-manager.nixosModules.home-manager
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -26,9 +30,10 @@
         [ (builtins.readFile ./ssh_host_ed25519_key.pub) ];
       extraGroups = [ "wheel" ];
 
-      home-manager.users.minimal = import ../home.nix;
     };
   };
+
+  home-manager.users.minimal = import ../home.nix;
 
   services.openssh = {
     enable = true;
