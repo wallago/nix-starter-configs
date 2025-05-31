@@ -22,7 +22,8 @@
     minimal = {
       initialPassword = "plankton";
       isNormalUser = true;
-      openssh.authorizedKeys.keys = [ ];
+      openssh.authorizedKeys.keys =
+        [ (builtins.readFile ./ssh_host_ed25519_key.pub) ];
       extraGroups = [ "wheel" ];
     };
   };
