@@ -25,6 +25,8 @@
       openssh.authorizedKeys.keys =
         [ (builtins.readFile ./ssh_host_ed25519_key.pub) ];
       extraGroups = [ "wheel" ];
+
+      home-manager.users.minimal = import ../home.nix;
     };
   };
 
